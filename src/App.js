@@ -14,28 +14,32 @@ function App() {
       <div id="lengths">
         <div id="break">
           <div id="break-label">
-
+            Break Length
           </div>
           <div id="break-buttons">
-            <div id="break-decrement">
+            <div id="break-decrement" className="button">
               <FontAwesomeIcon icon={faArrowDown}/>
             </div>
-            {breakLength}
-            <div id="break-increment">
+            <div className="number">
+             {breakLength}
+            </div>
+            <div id="break-increment" className="button">
               <FontAwesomeIcon icon={faArrowUp}/>
             </div>
           </div>
         </div>
         <div id="session">
           <div id="session-label">
-
+            Session Length
           </div>
           <div id="session-buttons">
-            <div id="session-decrement">
+            <div id="session-decrement" className="button">
             <FontAwesomeIcon icon={faArrowDown}/>
             </div>
-            {sessionLength}
-            <div id="session-increment">
+            <div className="number">
+              {sessionLength}
+            </div>
+            <div id="session-increment" className="button">
               <FontAwesomeIcon icon={faArrowUp}/>
             </div>
           </div>
@@ -44,14 +48,16 @@ function App() {
       <div id="session-view">
         <h2 id="timer-label">Session</h2>
         <div id="time-left">
-          25:00
+          <div className="number">
+            25:00
+          </div>
         </div>
       </div>
       <div id="timer-buttons">
-        <div id="start_stop">
+        <div id="start_stop" className="button">
           <FontAwesomeIcon icon={faPlay}/><FontAwesomeIcon icon={faPause}/>
         </div>
-        <div id="reset">
+        <div id="reset" className="button">
         <FontAwesomeIcon icon={faRotateLeft}/>
         </div>
       </div>

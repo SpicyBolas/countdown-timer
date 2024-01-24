@@ -1,38 +1,107 @@
+:root {
+  --primary-col:  #363062;
+  --secondary-col: #435585;
+  --tertiary-col: #818FB4;
+  --quart-col: #F5E8C7;
+}
+
+body {
+  font-size: 30px;
+  color: black;
+}
+
+
+body,#root {
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--primary-col);
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  background-color: var(--secondary-col);
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
+  width: 800px;
+  border-radius: 20px;
+  border: 5px black solid;
+  box-shadow: 8px 4px 4px black;
+  padding: 20px;
+  gap: 10px;
 }
 
-.App-link {
-  color: #61dafb;
+#lengths {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 60px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+#break,#session {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#break-buttons,#session-buttons {
+  width: 100%;
+  padding: 3px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+
+#session-view {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 300px;
+  padding: 5px;
+  gap: 5px;
+  border: 5px var(--primary-col) solid;
+  border-radius: 20px;
+}
+
+h1 {
+  font-size: 45px;
+  margin: 0;
+}
+
+#session-label,#break-label,#timer-label {
+  font-size: 30px;
+}
+
+#time-left {
+  font-size: 60px;
+}
+
+#timer-label{
+  margin: 0;
+}
+
+#timer-buttons {
+  width: 200px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  font-size: 40px;
+}
+
+.button {
+  color: var(--quart-col);
+}
+
+.number {
+  color: var(--quart-col);
 }
