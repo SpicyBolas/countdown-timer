@@ -1,13 +1,83 @@
 import logo from './logo.svg';
 import './App.css';
+import { useEffect } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
-import {thing1,thing2} from './timerSlice.js';
+import {toggleTimer,updateTimer} from './timerSlice.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown, faPlay, faPause, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 
 function App() {
-  const breakLength = useSelector((state)=>state.timer.break);
-  const sessionLength = useSelector((state)=>state.timer.session);
+  //Assign dispatch function for actions
+  const dispatch = useDispatch();
+  //Assign variables for states
+  var breakLength = useSelector((state)=>state.timer.break);
+  var sessionLength = useSelector((state)=>state.timer.session);
+  var onStatus = useSelector((state)=>state.timer.status);
+  var timeRemaining  = useSelector((state)=>state.timer.timeRemaining);
+  var timeRemainingStr  = useSelector((state)=>state.timer.timeRemainingStr);
+  
+ 
+ //Define function which takes in the numeric time remaining and converts to a string 
+  function timeToStr(timeIn) {
+    //Declare the string variables
+    let minsStr,secsStr;
+
+    //Separate time in into rounded minutes and seconds
+    let mins = Math.floor(timeIn);
+    let secs = Math.round((timeIn - mins)*60);
+    
+    //Append additional variable if mins is single digit, 
+    //otherwise convert to string as is
+    if(mins<10){
+      minsStr = '0' + mins.toString();
+    }
+    else {
+      minsStr = mins.toString();
+    }
+    //Append additional variable if secs is single digit, 
+    //otherwise convert to string as is
+    if(secs<10){
+      secsStr = '0' + secs.toString();
+    }
+    else {
+      secsStr = secs.toString();
+    }
+    //Concatenate the minutes and seconds into final time string
+    let strOut = minsStr + ':' + secsStr;
+    //return the time string
+    return strOut;
+  }
+  //Define a function to swap the timer status
+  function playPause(e) {
+    dispatch(toggleTimer());
+  }
+
+
+  //Use react hook 'useEffect' to update the timer each second
+  //when the timer status is on (i.e. 1) 
+  useEffect(() => {
+      //declare interval every 1000ms
+      var interval = setInterval(()=>{
+        //subtract one second off the remaining time if current timer status is on
+        if(onStatus === 1) {
+          //Subtract 1 second
+          let timeRemainingTemp = (timeRemaining*60 - 1)/60
+          
+          //Convert to string
+          let timeRemainingStrTemp = timeToStr(timeRemainingTemp);
+          
+          //Update the time remaining and string equivalent states
+          dispatch(updateTimer({timeIn: timeRemainingTemp,timeStrIn: timeRemainingStrTemp}))
+        }
+        //return null if timer status is off
+        else {
+          return null;
+        }
+      },1000);
+      //clear interval to prevent memory leaks
+      return () => clearInterval(interval);
+  },[onStatus,timeRemaining]) //use the hook on state changes for timer status or time remaining
+
   return (
     <div className="App">
       <h1 id="title">25 + 5 Clock</h1>
@@ -49,12 +119,12 @@ function App() {
         <h2 id="timer-label">Session</h2>
         <div id="time-left">
           <div className="number">
-            25:00
+            {timeRemainingStr}
           </div>
         </div>
       </div>
       <div id="timer-buttons">
-        <div id="start_stop" className="button">
+        <div id="start_stop" className="button" onClick={playPause}>
           <FontAwesomeIcon icon={faPlay}/><FontAwesomeIcon icon={faPause}/>
         </div>
         <div id="reset" className="button">
