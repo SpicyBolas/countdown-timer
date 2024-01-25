@@ -2,7 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import { useEffect } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
-import {toggleTimer,updateTimer} from './timerSlice.js';
+import {toggleTimer,toggleSession,updateTimer,setSession,setBreak} from './timerSlice.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown, faPlay, faPause, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 
@@ -15,6 +15,7 @@ function App() {
   var onStatus = useSelector((state)=>state.timer.status);
   var timeRemaining  = useSelector((state)=>state.timer.timeRemaining);
   var timeRemainingStr  = useSelector((state)=>state.timer.timeRemainingStr);
+  var sessionStatus  = useSelector((state)=>state.timer.sessionStatus);
   
  
  //Define function which takes in the numeric time remaining and converts to a string 
@@ -52,28 +53,93 @@ function App() {
     dispatch(toggleTimer());
   }
 
+  //Define a function to handle click increment changes for break and session
+  function handleBreakDecrement(e) {
+    let breakIn = Math.max(0,Math.min(breakLength-1,60));
+    dispatch(setBreak(breakIn));
+
+    if(sessionStatus===0){
+      let timeRemainingTemp = Math.max(0,Math.min(timeRemaining - 1,60));
+      let timeRemainingStrTemp = timeToStr(timeRemainingTemp);
+      dispatch(updateTimer({timeIn: timeRemainingTemp,timeStrIn: timeRemainingStrTemp}));
+    }
+  } 
+
+  function handleBreakIncrement(e) {
+    let breakIn = Math.max(0,Math.min(breakLength+1,60));
+    dispatch(setBreak(breakIn));
+
+    if(sessionStatus===0){
+      let timeRemainingTemp = Math.max(0,Math.min(timeRemaining + 1,60));
+      let timeRemainingStrTemp = timeToStr(timeRemainingTemp);
+      dispatch(updateTimer({timeIn: timeRemainingTemp,timeStrIn: timeRemainingStrTemp}));
+    }
+  } 
+
+  //Define a function to handle click increment changes for break and session
+  function handleSessionDecrement(e) {
+    let sessionIn = Math.max(0,Math.min(sessionLength-1,60));
+    dispatch(setSession(sessionIn));
+
+    if(sessionStatus===1){
+      let timeRemainingTemp = Math.max(0,Math.min(timeRemaining - 1,60));;
+      let timeRemainingStrTemp = timeToStr(timeRemainingTemp);
+      dispatch(updateTimer({timeIn: timeRemainingTemp,timeStrIn: timeRemainingStrTemp}));
+    }
+
+  } 
+
+  function handleSessionIncrement(e) {
+    let sessionIn = Math.max(0,Math.min(sessionLength+1,60));
+    dispatch(setSession(sessionIn));
+
+    if(sessionStatus===1){
+      let timeRemainingTemp = Math.max(0,Math.min(timeRemaining + 1,60));
+      let timeRemainingStrTemp = timeToStr(timeRemainingTemp);
+      dispatch(updateTimer({timeIn: timeRemainingTemp,timeStrIn: timeRemainingStrTemp}));
+    }
+  } 
 
   //Use react hook 'useEffect' to update the timer each second
   //when the timer status is on (i.e. 1) 
   useEffect(() => {
+      let timeRemainingTemp, timeRemainingStrTemp;
       //declare interval every 1000ms
       var interval = setInterval(()=>{
         //subtract one second off the remaining time if current timer status is on
         if(onStatus === 1) {
           //Subtract 1 second
-          let timeRemainingTemp = (timeRemaining*60 - 1)/60
+          timeRemainingTemp = Math.max(0,(timeRemaining*60 - 1)/60);
           
           //Convert to string
-          let timeRemainingStrTemp = timeToStr(timeRemainingTemp);
+          timeRemainingStrTemp = timeToStr(timeRemainingTemp);
           
           //Update the time remaining and string equivalent states
-          dispatch(updateTimer({timeIn: timeRemainingTemp,timeStrIn: timeRemainingStrTemp}))
+          dispatch(updateTimer({timeIn: timeRemainingTemp,timeStrIn: timeRemainingStrTemp}));
         }
         //return null if timer status is off
         else {
           return null;
         }
+
+        if(timeRemainingTemp===0){
+          dispatch(toggleSession());
+          
+          if(sessionStatus===1){
+            timeRemainingTemp = sessionLength;
+            timeRemainingStrTemp = timeToStr(timeRemainingTemp);
+  
+            dispatch(updateTimer({timeIn: timeRemainingTemp,timeStrIn: timeRemainingStrTemp}));
+          }
+          else{
+            timeRemainingTemp = breakLength;
+            timeRemainingStrTemp = timeToStr(timeRemainingTemp);
+  
+            dispatch(updateTimer({timeIn: timeRemainingTemp,timeStrIn: timeRemainingStrTemp}));
+          }
+        }
       },1000);
+
       //clear interval to prevent memory leaks
       return () => clearInterval(interval);
   },[onStatus,timeRemaining]) //use the hook on state changes for timer status or time remaining
@@ -87,13 +153,13 @@ function App() {
             Break Length
           </div>
           <div id="break-buttons">
-            <div id="break-decrement" className="button">
+            <div id="break-decrement" className="button" onClick={handleBreakDecrement}>
               <FontAwesomeIcon icon={faArrowDown}/>
             </div>
             <div className="number">
              {breakLength}
             </div>
-            <div id="break-increment" className="button">
+            <div id="break-increment" className="button" onClick={handleBreakIncrement}>
               <FontAwesomeIcon icon={faArrowUp}/>
             </div>
           </div>
@@ -103,13 +169,13 @@ function App() {
             Session Length
           </div>
           <div id="session-buttons">
-            <div id="session-decrement" className="button">
+            <div id="session-decrement" className="button" onClick={handleSessionDecrement}>
             <FontAwesomeIcon icon={faArrowDown}/>
             </div>
             <div className="number">
               {sessionLength}
             </div>
-            <div id="session-increment" className="button">
+            <div id="session-increment" className="button" onClick={handleSessionIncrement}>
               <FontAwesomeIcon icon={faArrowUp}/>
             </div>
           </div>
