@@ -27,9 +27,18 @@ export const timerSlice = createSlice({
         setSession: (state,action) => {
             state.session = action.payload;
         },
+        reset: (state) => {
+            state.break = 5;
+            state.session = 25;
+            state.status= 0;
+            state.sessionStatus = 1;
+            state.timeRemaining = 25;
+            state.timeRemainingStr = '25:00';
+        },
+
     },
 })
 
-export const {toggleTimer, toggleSession,updateTimer, setSession, setBreak} = timerSlice.actions;
+export const {toggleTimer, toggleSession,updateTimer, setSession, setBreak,reset} = timerSlice.actions;
 
 export default timerSlice.reducer;

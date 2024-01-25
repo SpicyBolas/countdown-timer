@@ -2,7 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import { useEffect } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
-import {toggleTimer,toggleSession,updateTimer,setSession,setBreak} from './timerSlice.js';
+import {toggleTimer,toggleSession,updateTimer,setSession,setBreak,reset} from './timerSlice.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown, faPlay, faPause, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 
@@ -100,6 +100,10 @@ function App() {
     }
   } 
 
+  function handleReset(e) {
+    dispatch(reset());
+  }
+
   //Use react hook 'useEffect' to update the timer each second
   //when the timer status is on (i.e. 1) 
   useEffect(() => {
@@ -126,13 +130,13 @@ function App() {
           dispatch(toggleSession());
           
           if(sessionStatus===1){
-            timeRemainingTemp = sessionLength;
+            timeRemainingTemp = breakLength;
             timeRemainingStrTemp = timeToStr(timeRemainingTemp);
   
             dispatch(updateTimer({timeIn: timeRemainingTemp,timeStrIn: timeRemainingStrTemp}));
           }
           else{
-            timeRemainingTemp = breakLength;
+            timeRemainingTemp = sessionLength;
             timeRemainingStrTemp = timeToStr(timeRemainingTemp);
   
             dispatch(updateTimer({timeIn: timeRemainingTemp,timeStrIn: timeRemainingStrTemp}));
@@ -182,7 +186,10 @@ function App() {
         </div>
       </div>
       <div id="session-view">
-        <h2 id="timer-label">Session</h2>
+        {sessionStatus===1 
+          ? <h2 id="timer-label">Session</h2>
+          : <h2 id="timer-label">Break</h2>
+        }
         <div id="time-left">
           <div className="number">
             {timeRemainingStr}
@@ -193,7 +200,7 @@ function App() {
         <div id="start_stop" className="button" onClick={playPause}>
           <FontAwesomeIcon icon={faPlay}/><FontAwesomeIcon icon={faPause}/>
         </div>
-        <div id="reset" className="button">
+        <div id="reset" className="button" onClick={handleReset}>
         <FontAwesomeIcon icon={faRotateLeft}/>
         </div>
       </div>
