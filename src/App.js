@@ -6,6 +6,8 @@ import {toggleTimer,toggleSession,updateTimer,setSession,setBreak,reset} from '.
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown, faPlay, faPause, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 
+import sound from './Audio/Alarm-clock-ringing-sound-effect.mp3';
+
 function App() {
   //Assign dispatch function for actions
   const dispatch = useDispatch();
@@ -17,6 +19,8 @@ function App() {
   var timeRemainingStr  = useSelector((state)=>state.timer.timeRemainingStr);
   var sessionStatus  = useSelector((state)=>state.timer.sessionStatus);
   
+  //Define the audio clip
+  var audio = new Audio(sound);
  
  //Define function which takes in the numeric time remaining and converts to a string 
   function timeToStr(timeIn) {
@@ -100,8 +104,11 @@ function App() {
     }
   } 
 
+  //Function to rest the clock and puase and reload the audio
   function handleReset(e) {
     dispatch(reset());
+    audio.pause();
+    audio.load();
   }
 
   //Use react hook 'useEffect' to update the timer each second
@@ -147,6 +154,19 @@ function App() {
       //clear interval to prevent memory leaks
       return () => clearInterval(interval);
   },[onStatus,timeRemaining]) //use the hook on state changes for timer status or time remaining
+
+  //Define hook for alarm sound at change of session/break states
+  useEffect(()=> {
+    //Only play if the clock is 'on'
+    if(onStatus===1){
+      audio.play();
+      //play sound for 2 seconds then pause and reload
+      setTimeout(()=> {
+        audio.pause();
+        audio.load();
+      },2000);
+  }
+  },[sessionStatus])
 
   return (
     <div className="App">
@@ -201,7 +221,7 @@ function App() {
           <FontAwesomeIcon icon={faPlay}/><FontAwesomeIcon icon={faPause}/>
         </div>
         <div id="reset" className="button" onClick={handleReset}>
-        <FontAwesomeIcon icon={faRotateLeft}/>
+          <FontAwesomeIcon icon={faRotateLeft}/>
         </div>
       </div>
     </div>
